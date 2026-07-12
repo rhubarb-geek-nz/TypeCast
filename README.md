@@ -1,0 +1,2 @@
+# TypeCast
+SystemTextEncoding for PowerShell
