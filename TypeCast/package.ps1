@@ -60,7 +60,7 @@ foreach ($framework in $TargetFrameworks.Split(';'))
 
 $moduleSettings = @{
 	Path = "$OutDir$ModuleId.psd1"
-	RootModule = "$AssemblyName.dll"
+	RootModule = "$ModuleId.psm1"
 	ModuleVersion = $Version
 	Guid = '4bf7f4ff-a579-4ccc-9df4-eb385c95cbd9'
 	Author = $Author
