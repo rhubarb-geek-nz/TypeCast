@@ -55,7 +55,7 @@ $TargetFrameworks = Get-SingleNodeValue $xmlDoc '/Project/PropertyGroup/TargetFr
 foreach ($framework in $TargetFrameworks.Split(';'))
 {
 	$dir = New-Item -Path $PublishDir -Name $framework -ItemType Directory
-	Copy-Item -Path "bin\Release\$framework\RhubarbGeekNz.TypeCast.dll" -Destination $dir
+	Copy-Item -Path "bin\Release\$framework\$AssemblyName.dll" -Destination $dir
 }
 
 $moduleSettings = @{
