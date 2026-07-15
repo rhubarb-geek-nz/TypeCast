@@ -95,5 +95,56 @@ namespace RhubarbGeekNz.TypeCast
                 }
             }
         }
+
+        [TestMethod]
+        public void TestFileSysString()
+        {
+            using (PowerShell powerShell = PowerShell.Create(initialSessionState))
+            {
+                powerShell.AddScript("Get-SystemTextEncoding -FileSystemCmdletProviderEncoding 'ascii'");
+
+                var outputPipeline = powerShell.Invoke();
+
+                Assert.AreEqual(1, outputPipeline.Count);
+
+                Assert.AreEqual("us-ascii", ((Encoding)outputPipeline[0].BaseObject).WebName);
+            }
+        }
+
+#if NETCOREAPP
+#else
+        [TestMethod]
+        public void TestFileSysName()
+        {
+            using (PowerShell powerShell = PowerShell.Create(initialSessionState))
+            {
+                powerShell.AddScript(
+                    "$value = [Microsoft.PowerShell.Commands.FileSystemCmdletProviderEncoding]::ASCII\r\n"+
+                    "Get-SystemTextEncoding $value");
+
+                var outputPipeline = powerShell.Invoke();
+
+                Assert.AreEqual(1, outputPipeline.Count);
+
+                Assert.AreEqual("us-ascii", ((Encoding)outputPipeline[0].BaseObject).WebName);
+            }
+        }
+        [TestMethod]
+        public void TestFileSysOrdinal()
+        {
+            using (PowerShell powerShell = PowerShell.Create(initialSessionState))
+            {
+                powerShell.AddScript(
+                    "$value = [Microsoft.PowerShell.Commands.FileSystemCmdletProviderEncoding]4\r\n" +
+                    "Get-SystemTextEncoding $value");
+
+                var outputPipeline = powerShell.Invoke();
+
+                Assert.AreEqual(1, outputPipeline.Count);
+
+                Assert.AreEqual("utf-16BE", ((Encoding)outputPipeline[0].BaseObject).WebName);
+            }
+        }
+#endif
     }
 }

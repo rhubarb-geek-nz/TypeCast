@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Roger Brown.
 # Licensed under the MIT License.
 
-param($ProjectName, $IntermediateOutputPath, $OutDir, $PublishDir)
+param($ProjectName='TypeCast', $IntermediateOutputPath='.', $OutDir='.\', $PublishDir = 'publish\')
 
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
@@ -11,6 +11,29 @@ trap
 {
 	throw $PSItem
 }
+
+if (Test-Path -LiteralPath $PublishDir)
+{
+	Remove-Item -LiteralPath $PublishDir -Recurse
+}
+
+dotnet clean --configuration Release
+
+if ($LastExitCode)
+{
+	throw "clean $LastExitCode"
+}
+
+dotnet build --configuration Release
+
+if ($LastExitCode)
+{
+	throw "build $LastExitCode"
+}
+
+$null = New-Item -Path . -Name publish -ItemType Directory
+
+Copy-Item -LiteralPath ..\README.md -Destination $PublishDir
 
 function Get-SingleNodeValue([System.Xml.XmlDocument]$doc,[string]$path)
 {
@@ -27,6 +50,13 @@ $Author = Get-SingleNodeValue $xmlDoc '/Project/PropertyGroup/Authors'
 $Copyright = Get-SingleNodeValue $xmlDoc '/Project/PropertyGroup/Copyright'
 $AssemblyName = Get-SingleNodeValue $xmlDoc '/Project/PropertyGroup/AssemblyName'
 $CompanyName = Get-SingleNodeValue $xmlDoc '/Project/PropertyGroup/Company'
+$TargetFrameworks = Get-SingleNodeValue $xmlDoc '/Project/PropertyGroup/TargetFrameworks'
+
+foreach ($framework in $TargetFrameworks.Split(';'))
+{
+	$dir = New-Item -Path $PublishDir -Name $framework -ItemType Directory
+	Copy-Item -Path "bin\Release\$framework\RhubarbGeekNz.TypeCast.dll" -Destination $dir
+}
 
 $moduleSettings = @{
 	Path = "$OutDir$ModuleId.psd1"
@@ -47,3 +77,7 @@ $moduleSettings = @{
 New-ModuleManifest @moduleSettings
 
 Import-PowerShellDataFile -LiteralPath "$OutDir$ModuleId.psd1" | Export-PowerShellDataFile | Set-Content -LiteralPath "$PublishDir$ModuleId.psd1" -Encoding utf8BOM
+
+Remove-Item "$OutDir$ModuleId.psd1"
+
+Copy-Item "$ModuleId.psm1" -Destination $PublishDir
