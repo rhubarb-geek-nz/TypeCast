@@ -11,6 +11,18 @@ Get-SystemTextEncoding [-CodePage] <int> [<CommonParameters>]
 Get-SystemTextEncoding [-Encoding] <Encoding> [<CommonParameters>]
 ```
 
+On PowerShell 7
+
+```
+Get-SystemTextEncoding -FileSystemCmdletProviderEncoding <string> [<CommonParameters>]
+```
+
+On Windows PowerShell
+
+```
+Get-SystemTextEncoding [-FileSystemCmdletProviderEncoding] <FileSystemCmdletProviderEncoding> [<CommonParameters>]
+```
+
 Uses [System.Text.Encoding.GetEncoding](https://learn.microsoft.com/en-us/dotnet/api/system.text.encoding.getencoding) for lookup by name or code page.
 
 Example
