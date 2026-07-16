@@ -36,7 +36,7 @@ namespace RhubarbGeekNz.TypeCast
             {
                 var fieldInfo = typeClass.GetField("encodingMap", BindingFlags.NonPublic | BindingFlags.Static);
 
-                if (fieldInfo != null)
+                if (fieldInfo != null && typeof(IDictionary<string, Encoding>).IsAssignableFrom(fieldInfo.FieldType))
                 {
                     encodingMap = (IDictionary<string, Encoding>)fieldInfo.GetValue(null);
                 }
